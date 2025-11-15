@@ -147,10 +147,13 @@ class AudioRecordingService: NSObject, ObservableObject {
         // Duration timer (updates every 0.1 seconds)
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            
+
             Task { @MainActor in
+                // Only update if still recording
+                guard self.isRecording else { return }
+
                 self.recordingDuration += 0.1
-                
+
                 // Check if max duration reached
                 if self.recordingDuration >= self.maxRecordingDuration {
                     self.error = .maxDurationReached
@@ -158,18 +161,19 @@ class AudioRecordingService: NSObject, ObservableObject {
                 }
             }
         }
-        
+
         // Audio level timer (updates every 0.05 seconds for smooth animation)
         levelTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
             guard let self = self, let recorder = self.audioRecorder else { return }
-            
+
+            // Update meters and get level on background thread
             recorder.updateMeters()
             let averagePower = recorder.averagePower(forChannel: 0)
-            
-            // Convert to 0-1 range for visualization
             let normalizedLevel = self.normalizeAudioLevel(averagePower)
-            
+
             Task { @MainActor in
+                // Only update if still recording
+                guard self.isRecording else { return }
                 self.audioLevel = normalizedLevel
             }
         }
