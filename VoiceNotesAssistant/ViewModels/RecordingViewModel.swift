@@ -39,6 +39,9 @@ class RecordingViewModel: ObservableObject {
         audioRecordingService.$isRecording
             .assign(to: &$isRecording)
         
+        audioRecordingService.$isPaused
+            .assign(to: &$isPaused)
+        
         audioRecordingService.$recordingDuration
             .sink { [weak self] duration in
                 self?.recordingDuration = duration
@@ -120,13 +123,11 @@ class RecordingViewModel: ObservableObject {
     /// Pauses recording
     func pauseRecording() {
         audioRecordingService.pauseRecording()
-        isPaused = true
     }
     
     /// Resumes recording
     func resumeRecording() {
         audioRecordingService.resumeRecording()
-        isPaused = false
     }
     
     /// Formats duration for display

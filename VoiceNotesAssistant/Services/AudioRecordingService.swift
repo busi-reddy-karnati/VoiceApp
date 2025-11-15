@@ -11,6 +11,7 @@ import Combine
 /// Service responsible for audio recording functionality
 class AudioRecordingService: NSObject, ObservableObject {
     @Published var isRecording = false
+    @Published var isPaused = false
     @Published var recordingDuration: TimeInterval = 0
     @Published var audioLevel: Float = 0
     @Published var error: AudioRecordingError?
@@ -93,6 +94,7 @@ class AudioRecordingService: NSObject, ObservableObject {
         
         await MainActor.run {
             isRecording = false
+            isPaused = false
         }
         
         // Stop recording and ensure file is closed
@@ -117,6 +119,7 @@ class AudioRecordingService: NSObject, ObservableObject {
         
         await MainActor.run {
             isRecording = false
+            isPaused = false
         }
         
         audioRecorder?.stop()
@@ -138,12 +141,14 @@ class AudioRecordingService: NSObject, ObservableObject {
     /// Pauses recording
     func pauseRecording() {
         audioRecorder?.pause()
+        isPaused = true
         stopTimers()
     }
     
     /// Resumes recording
     func resumeRecording() {
         audioRecorder?.record()
+        isPaused = false
         startTimers()
     }
     
@@ -164,8 +169,8 @@ class AudioRecordingService: NSObject, ObservableObject {
             guard let self = self else { return }
             
             Task { @MainActor in
-                // Only update if still recording
-                guard self.isRecording else { return }
+                // Only update if still recording and not paused
+                guard self.isRecording && !self.isPaused else { return }
                 
                 self.recordingDuration += 0.1
                 
@@ -182,8 +187,8 @@ class AudioRecordingService: NSObject, ObservableObject {
             guard let self = self else { return }
             
             Task { @MainActor in
-                // Only update if still recording
-                guard self.isRecording, let recorder = self.audioRecorder else { return }
+                // Only update if still recording and not paused
+                guard self.isRecording && !self.isPaused, let recorder = self.audioRecorder else { return }
                 
                 recorder.updateMeters()
                 let averagePower = recorder.averagePower(forChannel: 0)

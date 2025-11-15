@@ -10,7 +10,7 @@ import SwiftUI
 /// Modal view showing full details of a recording
 struct RecordingDetailView: View {
     let note: VoiceNote
-    let playbackService: AudioPlaybackService
+    @ObservedObject var playbackService: AudioPlaybackService
     let onDelete: () -> Void
     
     @Environment(\.dismiss) private var dismiss
