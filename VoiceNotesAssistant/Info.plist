@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Voice Notes needs access to your microphone to record voice notes.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Voice Notes would like to add your location to recordings so you can remember where you recorded them.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Voice Notes uses speech recognition to automatically transcribe your recordings for easy reference.</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>AccentColor</string>
+		<key>UIImageName</key>
+		<string></string>
+	</dict>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>microphone</string>
+	</array>
+</dict>
+</plist>
+
