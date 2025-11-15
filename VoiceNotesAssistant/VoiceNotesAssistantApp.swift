@@ -10,12 +10,13 @@ import CoreData
 
 @main
 struct VoiceNotesAssistantApp: App {
-    let persistenceController = PersistenceController.shared
+    @StateObject private var dataPersistenceService = DataPersistenceService.shared
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.managedObjectContext, dataPersistenceService.container.viewContext)
+                .environmentObject(dataPersistenceService)
         }
     }
 }
