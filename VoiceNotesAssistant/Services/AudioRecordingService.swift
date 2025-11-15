@@ -89,13 +89,16 @@ class AudioRecordingService: NSObject, ObservableObject {
     
     /// Stops recording and returns the final duration
     func stopRecording() async -> TimeInterval {
-        audioRecorder?.stop()
-        stopTimers()
-        
         let duration = recordingDuration
         
         await MainActor.run {
             isRecording = false
+        }
+        
+        audioRecorder?.stop()
+        stopTimers()
+        
+        await MainActor.run {
             recordingDuration = 0
             audioLevel = 0
         }
@@ -107,6 +110,10 @@ class AudioRecordingService: NSObject, ObservableObject {
     func cancelRecording() async {
         guard let url = audioRecorder?.url else { return }
         
+        await MainActor.run {
+            isRecording = false
+        }
+        
         audioRecorder?.stop()
         stopTimers()
         
@@ -114,7 +121,6 @@ class AudioRecordingService: NSObject, ObservableObject {
         try? FileManager.default.removeItem(at: url)
         
         await MainActor.run {
-            isRecording = false
             recordingDuration = 0
             audioLevel = 0
         }
@@ -149,6 +155,9 @@ class AudioRecordingService: NSObject, ObservableObject {
             guard let self = self else { return }
             
             Task { @MainActor in
+                // Only update if still recording
+                guard self.isRecording else { return }
+                
                 self.recordingDuration += 0.1
                 
                 // Check if max duration reached
@@ -161,15 +170,17 @@ class AudioRecordingService: NSObject, ObservableObject {
         
         // Audio level timer (updates every 0.05 seconds for smooth animation)
         levelTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
-            guard let self = self, let recorder = self.audioRecorder else { return }
-            
-            recorder.updateMeters()
-            let averagePower = recorder.averagePower(forChannel: 0)
-            
-            // Convert to 0-1 range for visualization
-            let normalizedLevel = self.normalizeAudioLevel(averagePower)
+            guard let self = self else { return }
             
             Task { @MainActor in
+                // Only update if still recording
+                guard self.isRecording, let recorder = self.audioRecorder else { return }
+                
+                recorder.updateMeters()
+                let averagePower = recorder.averagePower(forChannel: 0)
+                
+                // Convert to 0-1 range for visualization
+                let normalizedLevel = self.normalizeAudioLevel(averagePower)
                 self.audioLevel = normalizedLevel
             }
         }
