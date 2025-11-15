@@ -95,8 +95,13 @@ class AudioRecordingService: NSObject, ObservableObject {
             isRecording = false
         }
         
+        // Stop recording and ensure file is closed
         audioRecorder?.stop()
+        audioRecorder = nil // Release the recorder to ensure file is fully written
         stopTimers()
+        
+        // Deactivate audio session
+        try? audioSession.setActive(false, options: .notifyOthersOnDeactivation)
         
         await MainActor.run {
             recordingDuration = 0
@@ -115,7 +120,11 @@ class AudioRecordingService: NSObject, ObservableObject {
         }
         
         audioRecorder?.stop()
+        audioRecorder = nil
         stopTimers()
+        
+        // Deactivate audio session
+        try? audioSession.setActive(false, options: .notifyOthersOnDeactivation)
         
         // Delete the file
         try? FileManager.default.removeItem(at: url)

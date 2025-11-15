@@ -84,6 +84,9 @@ class RecordingViewModel: ObservableObject {
         
         let duration = await audioRecordingService.stopRecording()
         
+        // Wait a moment to ensure file is fully written to disk
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+        
         // Save to Core Data
         let fileName = recordingURL.lastPathComponent
         let voiceNote = persistenceService.createVoiceNote(

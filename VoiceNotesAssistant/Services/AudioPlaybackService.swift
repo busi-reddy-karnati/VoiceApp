@@ -9,6 +9,7 @@ import AVFoundation
 import Combine
 
 /// Service responsible for audio playback functionality
+@MainActor
 class AudioPlaybackService: NSObject, ObservableObject {
     @Published var isPlaying = false
     @Published var currentlyPlayingFileName: String?
@@ -80,13 +81,13 @@ class AudioPlaybackService: NSObject, ObservableObject {
     }
     
     /// Toggles play/pause for a specific file
-    func togglePlayPause(fileName: String) {
+    func togglePlayPause(fileName: String) throws {
         if currentlyPlayingFileName == fileName && isPlaying {
             pause()
         } else if currentlyPlayingFileName == fileName && !isPlaying {
             resume()
         } else {
-            try? play(fileName: fileName)
+            try play(fileName: fileName)
         }
     }
     
@@ -94,7 +95,9 @@ class AudioPlaybackService: NSObject, ObservableObject {
     
     private func startProgressTimer() {
         progressTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.updateProgress()
+            Task { @MainActor in
+                self?.updateProgress()
+            }
         }
     }
     
@@ -125,14 +128,14 @@ class AudioPlaybackService: NSObject, ObservableObject {
 // MARK: - AVAudioPlayerDelegate
 
 extension AudioPlaybackService: AVAudioPlayerDelegate {
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        DispatchQueue.main.async {
+    nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        Task { @MainActor in
             self.handlePlaybackFinished()
         }
     }
     
-    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-        DispatchQueue.main.async {
+    nonisolated func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
+        Task { @MainActor in
             self.stop()
         }
     }

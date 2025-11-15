@@ -25,7 +25,11 @@ struct RecordingDetailView: View {
                         // Play/Pause button
                         Button(action: {
                             if let fileName = note.audioFileName {
-                                try? playbackService.togglePlayPause(fileName: fileName)
+                                do {
+                                    try playbackService.togglePlayPause(fileName: fileName)
+                                } catch {
+                                    print("Playback error: \(error.localizedDescription)")
+                                }
                             }
                         }) {
                             Circle()
