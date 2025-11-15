@@ -5,8 +5,9 @@
 //  Manages local speech recognition and transcription
 //
 
-import Speech
 import AVFoundation
+import Combine
+import Speech
 
 /// Service responsible for transcribing audio recordings
 class TranscriptionService: ObservableObject {

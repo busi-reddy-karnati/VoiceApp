@@ -10,9 +10,22 @@
 		8B7692932EC8837F003E0F31 /* VoiceNotesAssistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceNotesAssistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8B7692A62EC88380003E0F31 /* Exceptions for "VoiceNotesAssistant" folder in "VoiceNotesAssistant" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8B7692922EC8837F003E0F31 /* VoiceNotesAssistant */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8B7692952EC8837F003E0F31 /* VoiceNotesAssistant */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8B7692A62EC88380003E0F31 /* Exceptions for "VoiceNotesAssistant" folder in "VoiceNotesAssistant" target */,
+			);
 			path = VoiceNotesAssistant;
 			sourceTree = "<group>";
 		};

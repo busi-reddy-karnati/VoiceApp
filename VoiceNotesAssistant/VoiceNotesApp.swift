@@ -10,15 +10,11 @@ import AVFoundation
 
 @main
 struct VoiceNotesApp: App {
-    // Initialize Core Data persistence
-    @StateObject private var persistenceService = DataPersistenceService.shared
-    @StateObject private var permissionsManager = PermissionsManager.shared
-    
     var body: some Scene {
         WindowGroup {
             MainView()
-                .environmentObject(persistenceService)
-                .environmentObject(permissionsManager)
+                .environmentObject(DataPersistenceService.shared)
+                .environmentObject(PermissionsManager.shared)
                 .onAppear {
                     setupApp()
                 }
@@ -27,7 +23,7 @@ struct VoiceNotesApp: App {
     
     private func setupApp() {
         // Request initial permissions
-        permissionsManager.checkAllPermissions()
+        PermissionsManager.shared.checkAllPermissions()
         
         // Configure audio session
         do {
